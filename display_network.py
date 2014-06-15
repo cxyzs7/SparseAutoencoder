@@ -1,7 +1,8 @@
 from math import sqrt, ceil, floor
+
+import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.cm as cm
-import numpy as np
 
 
 def display_network(data, cols=-1, opt_normalize=True, opt_graycolor=True):

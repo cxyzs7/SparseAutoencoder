@@ -1,11 +1,11 @@
-__author__ = 'ylou'
+from random import randint
+from math import sqrt
+
+import numpy as np
 
 from sample_images import sample_images
 from display_network import display_network
 from sparse_autoencoder_cost import sparse_autoencoder_cost
-from math import sqrt
-import random
-import numpy as np
 
 
 def initialize_parameters(hidden_size, visible_size):
@@ -43,7 +43,7 @@ def train():
     # display a random sample of 200 patches from the dataset
 
     patches = sample_images()
-    list = [random.randint(0, patches.shape[0]-1) for i in xrange(64)]
+    list = [randint(0, patches.shape[0]-1) for i in xrange(64)]
     display_network(patches[list, :], 8)
 
     # Obtain random parameters theta

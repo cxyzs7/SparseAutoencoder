@@ -1,8 +1,7 @@
-__author__ = 'ylou'
-
-import scipy.io
-import numpy as np
 from random import randint
+
+from scipy.io import loadmat
+import numpy as np
 #from matplotlib import pyplot as plt
 
 
@@ -31,7 +30,7 @@ def sample_images():
     :return: 10000 patches for training
     """
     ## Get IMAGES.mat from http://ufldl.stanford.edu/wiki/resources/sparseae_exercise.zip
-    images = scipy.io.loadmat('IMAGES.mat')['IMAGES']    # load images from disk
+    images = loadmat('IMAGES.mat')['IMAGES']    # load images from disk
     num_images = images.shape[2]
 
     patch_size = 8          # we'll use 8x8 patches
