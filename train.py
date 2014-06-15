@@ -6,6 +6,8 @@ import numpy as np
 from sample_images import sample_images
 from display_network import display_network
 from sparse_autoencoder_cost import sparse_autoencoder_cost
+from check_numerical_gradient import check_numerical_gradient
+from compute_numerical_gradient import compute_numerical_gradient
 
 
 def initialize_parameters(hidden_size, visible_size):
@@ -43,8 +45,8 @@ def train():
     # display a random sample of 200 patches from the dataset
 
     patches = sample_images()
-    list = [randint(0, patches.shape[0]-1) for i in xrange(64)]
-    display_network(patches[list, :], 8)
+#    list = [randint(0, patches.shape[0]-1) for i in xrange(64)]
+#    display_network(patches[list, :], 8)
 
     # Obtain random parameters theta
     theta = initialize_parameters(hidden_size, visible_size)
@@ -77,7 +79,32 @@ def train():
 
     cost, grad = sparse_autoencoder_cost(theta, visible_size, hidden_size, decay_lambda, sparsity_param, beta, patches)
 
+    ## STEP 3: Gradient Checking
+    #
+    # Hint: If you are debugging your code, performing gradient checking on smaller models
+    # and smaller training sets (e.g., using only 10 training examples and 1-2 hidden
+    # units) may speed things up.
 
+    # First, lets make sure your numerical gradient computation is correct for a
+    # simple function.  After you have implemented compute_numerical_gradient,
+    # run the following:
+    check_numerical_gradient()
+
+    # Now we can use it to check your cost function and derivative calculations
+    # for the sparse autoencoder.
+    func = lambda x: sparse_autoencoder_cost(x, visible_size, hidden_size,
+                                             decay_lambda, sparsity_param, beta, patches)
+    numgrad = compute_numerical_gradient(func, theta)
+
+    # Use this to visually compare the gradients side by side
+    print numgrad, grad
+
+    # Compare numerically computed gradients with the ones obtained from backpropagation
+    diff = np.linalg.norm(numgrad-grad)/np.linalg.norm(numgrad+grad)
+    # Should be small. In our implementation, these values are usually less than 1e-9.
+    print diff
+
+    # When you got this working, Congratulations!!!
 
 
 if __name__ == "__main__":
