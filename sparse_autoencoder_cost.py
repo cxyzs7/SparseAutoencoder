@@ -1,4 +1,24 @@
+from random import randint
+from math import sqrt
+
 import numpy as np
+
+
+def initialize_parameters(hidden_size, visible_size):
+    # Initialize parameters randomly based on layer sizes.
+    r = sqrt(6) / sqrt(hidden_size+visible_size+1)   # we'll choose weights uniformly from the interval [-r, r]
+    w1 = np.random.rand(hidden_size, visible_size) * 2 * r - r
+    w2 = np.random.rand(visible_size, hidden_size) * 2 * r - r
+
+    b1 = np.zeros((hidden_size, 1))
+    b2 = np.zeros((visible_size, 1))
+
+    # Convert weights and bias gradients to the vector form.
+    # This step will "unroll" (flatten and concatenate together) all
+    # your parameters into a vector, which can then be used with minFunc.
+    theta = np.concatenate((w1.flatten(), w2.flatten(), b1.flatten(), b2.flatten()))
+
+    return theta
 
 
 # Here's an implementation of the sigmoid function, which you may find useful
@@ -8,7 +28,7 @@ def sigmoid(x):
     return 1 / (1 + np.exp(-x))
 
 
-def sparse_autoencoder_cost(theta, visible_size, hidden_size, decay_lambda, sparsity_param, beta, data):
+def sparse_autoencoder_cost_and_grad(theta, visible_size, hidden_size, decay_lambda, sparsity_param, beta, data):
     # visible_size: the number of input units (probably 64)
     # hidden_size: the number of hidden units (probably 25)
     # decay_lambda: weight decay parameter
@@ -21,7 +41,7 @@ def sparse_autoencoder_cost(theta, visible_size, hidden_size, decay_lambda, spar
     # We first convert theta to the (W1, W2, b1, b2) matrix/vector format, so that this
     # follows the notation convention of the lecture notes.
 
-    num_combinations = hidden_size*visible_size
+    num_combinations = visible_size*hidden_size
     w1 = theta[0:num_combinations].reshape((hidden_size, visible_size))
     w2 = theta[num_combinations:2*num_combinations].reshape((visible_size, hidden_size))
     b1 = theta[2*num_combinations:2*num_combinations+hidden_size]
@@ -31,7 +51,7 @@ def sparse_autoencoder_cost(theta, visible_size, hidden_size, decay_lambda, spar
     # Here, we initialize them to zeros.
     cost = 0
     w1grad = np.zeros_like(w1)
-    w2grad = np.zeros_like(w1)
+    w2grad = np.zeros_like(w2)
     b1grad = np.zeros_like(b1)
     b2grad = np.zeros_like(b2)
 
@@ -65,3 +85,8 @@ def sparse_autoencoder_cost(theta, visible_size, hidden_size, decay_lambda, spar
     grad = np.concatenate((w1grad.flatten(), w2grad.flatten(), b1grad.flatten(), b2grad.flatten()))
 
     return cost, grad
+
+
+def sparse_autoencoder_cost(theta, visible_size, hidden_size, decay_lambda, sparsity_param, beta, data):
+    return sparse_autoencoder_cost_and_grad(theta, visible_size, hidden_size,
+                                            decay_lambda, sparsity_param, beta, data)[0]

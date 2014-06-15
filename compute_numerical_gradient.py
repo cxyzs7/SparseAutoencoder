@@ -22,9 +22,9 @@ def compute_numerical_gradient(func, theta):
     for i in xrange(theta.size):
         theta_i = theta[i]
         theta[i] = theta_i+EPSILON
-        val_plus = func(theta)[0]
+        val_plus = func(theta)
         theta[i] = theta_i-EPSILON
-        val_minus = func(theta)[0]
+        val_minus = func(theta)
         numgrad[i] = (val_plus-val_minus)/(EPSILON*2)
         # recover theta
         theta[i] = theta_i

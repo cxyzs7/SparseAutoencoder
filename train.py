@@ -1,30 +1,11 @@
-from random import randint
-from math import sqrt
-
 import numpy as np
+from scipy.optimize import minimize
 
 from sample_images import sample_images
 from display_network import display_network
-from sparse_autoencoder_cost import sparse_autoencoder_cost
+from sparse_autoencoder_cost import initialize_parameters, sparse_autoencoder_cost, sparse_autoencoder_cost_and_grad
 from check_numerical_gradient import check_numerical_gradient
 from compute_numerical_gradient import compute_numerical_gradient
-
-
-def initialize_parameters(hidden_size, visible_size):
-    # Initialize parameters randomly based on layer sizes.
-    r = sqrt(6) / sqrt(hidden_size+visible_size+1)   # we'll choose weights uniformly from the interval [-r, r]
-    w1 = np.random.rand(hidden_size, visible_size) * 2 * r - r
-    w2 = np.random.rand(visible_size, hidden_size) * 2 * r - r
-
-    b1 = np.zeros((hidden_size, 1))
-    b2 = np.zeros((visible_size, 1))
-
-    # Convert weights and bias gradients to the vector form.
-    # This step will "unroll" (flatten and concatenate together) all
-    # your parameters into a vector, which can then be used with minFunc.
-    theta = np.concatenate((w1.flatten(), w2.flatten(), b1.flatten(), b2.flatten()))
-
-    return theta
 
 
 def train():
@@ -76,10 +57,10 @@ def train():
     #  and/or lambda to zero may be helpful for debugging.)  However, in your
     #  final submission of the visualized weights, please use parameters we
     #  gave in Step 0 above.
+    cost, grad = sparse_autoencoder_cost_and_grad(theta, visible_size, hidden_size,
+                                                  decay_lambda, sparsity_param, beta, patches)
 
-    cost, grad = sparse_autoencoder_cost(theta, visible_size, hidden_size, decay_lambda, sparsity_param, beta, patches)
-
-    ## STEP 3: Gradient Checking
+    # STEP 3: Gradient Checking
     #
     # Hint: If you are debugging your code, performing gradient checking on smaller models
     # and smaller training sets (e.g., using only 10 training examples and 1-2 hidden
@@ -104,7 +85,19 @@ def train():
     # Should be small. In our implementation, these values are usually less than 1e-9.
     print diff
 
-    # When you got this working, Congratulations!!!
+    # STEP 4: After verifying that your implementation of
+    #  sparse_autoencoder_cost is correct, You can start training your sparse
+    #  autoencoder with minFunc (L-BFGS).
+
+    #  Randomly initialize the parameters
+    theta = initialize_parameters(hidden_size, visible_size)
+    func_args = (visible_size, hidden_size, decay_lambda, sparsity_param, beta, patches)
+    res = minimize(sparse_autoencoder_cost_and_grad, x0=theta, args=func_args, method='L-BFGS-B',
+                   jac=True, options={'maxiter': 400, 'disp': True})
+
+    # STEP 5: Visualization
+    w1 = res.x[0: hidden_size*visible_size].reshape((hidden_size, visible_size))
+#    display_network(w1, 12)
 
 
 if __name__ == "__main__":

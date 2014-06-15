@@ -11,12 +11,14 @@ def simple_quadratic_function(x):
     # Note that when we pass simple_quadratic_function(x) to check_numerical_gradient, we're assuming
     # that compute_numerical_gradient will use only the first returned value of this function.
     value = x[0]**2 + 3*x[0]*x[1]
+    return value
 
+
+def simple_quadratic_function_grad(x):
     grad = np.empty_like(x)
     grad[0] = 2*x[0] + 3*x[1]
     grad[1] = 3*x[0]
-
-    return value, grad
+    return grad
 
 
 def check_numerical_gradient():
@@ -29,7 +31,7 @@ def check_numerical_gradient():
 
     # Evaluate the function and gradient at x = [4, 10] (Here, x is a 2d vector.)
     x = np.array([4.0, 10.0])
-    value, grad = simple_quadratic_function(x)
+    value, grad = simple_quadratic_function(x), simple_quadratic_function_grad(x)
 
     # Use your code to numerically compute the gradient of simple_quadratic_function at x.
     # (The notation "simple_quadratic_function" denotes a pointer to a function.)
