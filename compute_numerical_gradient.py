@@ -6,7 +6,7 @@ def compute_numerical_gradient(func, theta):
     # func: a function that outputs a real-number. Calling y = J(theta) will return the
     # function value at theta. 
 
-    # Initialize numgrad with zeros
+    # Initialize numgrad (no need to initialize to zero, empty_like is a good fit here)
     numgrad = np.empty_like(theta)
 
     # Instructions: 
@@ -18,15 +18,19 @@ def compute_numerical_gradient(func, theta):
     # respect to theta(i).
     #                
     # Hint: You will probably want to compute the elements of numgrad one at a time.
-    EPSILON = 1e-4
+    epsilon = 1e-4
     for i in xrange(theta.size):
+        # temporarily save the value
         theta_i = theta[i]
-        theta[i] = theta_i+EPSILON
+        # temporarily increase the value
+        theta[i] = theta_i+epsilon
         val_plus = func(theta)
-        theta[i] = theta_i-EPSILON
+        # temporarily decrease the value
+        theta[i] = theta_i-epsilon
         val_minus = func(theta)
-        numgrad[i] = (val_plus-val_minus)/(EPSILON*2)
-        # recover theta
+        # compute numerical gradient
+        numgrad[i] = (val_plus-val_minus)/(epsilon*2)
+        # restore theta
         theta[i] = theta_i
 
     return numgrad

@@ -56,6 +56,7 @@ def display_network(data, cols=-1, opt_normalize=True, opt_graycolor=True):
             array[buf+i*(sz+buf):buf+i*(sz+buf)+sz, buf+j*(sz+buf):buf+j*(sz+buf)+sz] = data[k, :].reshape([sz, sz])/clim
             k += 1
 
+    # simulate imagesc
     ax = plt.figure().gca()
     pix_width = 5
     h, w = array.shape

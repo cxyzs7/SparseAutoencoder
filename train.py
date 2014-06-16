@@ -13,8 +13,10 @@ def train():
     # allow your sparse autoencoder to get good filters; you do not need to
     # change the parameters below.
 
-    visible_size = 8*8   # number of input units
-    hidden_size = 25     # number of hidden units
+    patch_size = 8
+    num_patches = 10000
+    visible_size = patch_size**2    # number of input units
+    hidden_size = 25                # number of hidden units
     sparsity_param = 0.01   # desired average activation of the hidden units.
                         # (This was denoted by the Greek alphabet rho, which looks like a lower-case "p",
                         #  in the lecture notes).
@@ -25,12 +27,12 @@ def train():
     # After implementing sampleIMAGES, the display_network command should
     # display a random sample of 200 patches from the dataset
 
-    patches = sample_images()
+    patches = sample_images(patch_size, num_patches)
 #    list = [randint(0, patches.shape[0]-1) for i in xrange(64)]
 #    display_network(patches[list, :], 8)
 
     # Obtain random parameters theta
-    theta = initialize_parameters(hidden_size, visible_size)
+#    theta = initialize_parameters(visible_size, hidden_size)
 
     # STEP 2: Implement sparseAutoencoderCost
     #
@@ -57,8 +59,8 @@ def train():
     #  and/or lambda to zero may be helpful for debugging.)  However, in your
     #  final submission of the visualized weights, please use parameters we
     #  gave in Step 0 above.
-    cost, grad = sparse_autoencoder_cost_and_grad(theta, visible_size, hidden_size,
-                                                  decay_lambda, sparsity_param, beta, patches)
+#    cost, grad = sparse_autoencoder_cost_and_grad(theta, visible_size, hidden_size,
+#                                                  decay_lambda, sparsity_param, beta, patches)
 
     # STEP 3: Gradient Checking
     #
@@ -69,35 +71,36 @@ def train():
     # First, lets make sure your numerical gradient computation is correct for a
     # simple function.  After you have implemented compute_numerical_gradient,
     # run the following:
-    check_numerical_gradient()
+#    check_numerical_gradient()
 
     # Now we can use it to check your cost function and derivative calculations
     # for the sparse autoencoder.
-    func = lambda x: sparse_autoencoder_cost(x, visible_size, hidden_size,
-                                             decay_lambda, sparsity_param, beta, patches)
-    numgrad = compute_numerical_gradient(func, theta)
+#    func = lambda x: sparse_autoencoder_cost(x, visible_size, hidden_size,
+#                                             decay_lambda, sparsity_param, beta, patches)
+#    numgrad = compute_numerical_gradient(func, theta)
 
     # Use this to visually compare the gradients side by side
-    print numgrad, grad
+#    print numgrad, grad
 
     # Compare numerically computed gradients with the ones obtained from backpropagation
-    diff = np.linalg.norm(numgrad-grad)/np.linalg.norm(numgrad+grad)
+#    diff = np.linalg.norm(numgrad-grad)/np.linalg.norm(numgrad+grad)
     # Should be small. In our implementation, these values are usually less than 1e-9.
-    print diff
+#    print diff
 
     # STEP 4: After verifying that your implementation of
-    #  sparse_autoencoder_cost is correct, You can start training your sparse
-    #  autoencoder with minFunc (L-BFGS).
+    # sparse_autoencoder_cost is correct, You can start training your sparse
+    # autoencoder with minFunc (L-BFGS).
 
-    #  Randomly initialize the parameters
-    theta = initialize_parameters(hidden_size, visible_size)
+    # Randomly initialize the parameters
+    # Use minimize interface, and set jac=True, so it can accept cost and grad together
+    theta = initialize_parameters(visible_size, hidden_size)
     func_args = (visible_size, hidden_size, decay_lambda, sparsity_param, beta, patches)
     res = minimize(sparse_autoencoder_cost_and_grad, x0=theta, args=func_args, method='L-BFGS-B',
                    jac=True, options={'maxiter': 400, 'disp': True})
 
     # STEP 5: Visualization
     w1 = res.x[0: hidden_size*visible_size].reshape((hidden_size, visible_size))
-#    display_network(w1, 12)
+    display_network(w1, 5)
 
 
 if __name__ == "__main__":

@@ -25,16 +25,13 @@ def normalize_data(patches):
     return patches
 
 
-def sample_images():
+def sample_images(patch_size, num_patches):
     """
     :return: 10000 patches for training
     """
     ## Get IMAGES.mat from http://ufldl.stanford.edu/wiki/resources/sparseae_exercise.zip
     images = loadmat('IMAGES.mat')['IMAGES']    # load images from disk
     num_images = images.shape[2]
-
-    patch_size = 8          # we'll use 8x8 patches
-    num_patches = 10000
 
     # Initialize patches
     patches = np.empty([num_patches, patch_size*patch_size])

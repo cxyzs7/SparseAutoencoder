@@ -4,14 +4,14 @@ from math import sqrt
 import numpy as np
 
 
-def initialize_parameters(hidden_size, visible_size):
+def initialize_parameters(visible_size, hidden_size):
     # Initialize parameters randomly based on layer sizes.
     r = sqrt(6) / sqrt(hidden_size+visible_size+1)   # we'll choose weights uniformly from the interval [-r, r]
-    w1 = np.random.rand(hidden_size, visible_size) * 2 * r - r
-    w2 = np.random.rand(visible_size, hidden_size) * 2 * r - r
+    w1 = np.random.rand(visible_size, hidden_size) * 2 * r - r
+    w2 = np.random.rand(hidden_size, visible_size) * 2 * r - r
 
-    b1 = np.zeros((hidden_size, 1))
-    b2 = np.zeros((visible_size, 1))
+    b1 = np.zeros((1, hidden_size))
+    b2 = np.zeros((1, visible_size))
 
     # Convert weights and bias gradients to the vector form.
     # This step will "unroll" (flatten and concatenate together) all
@@ -42,18 +42,10 @@ def sparse_autoencoder_cost_and_grad(theta, visible_size, hidden_size, decay_lam
     # follows the notation convention of the lecture notes.
 
     num_combinations = visible_size*hidden_size
-    w1 = theta[0:num_combinations].reshape((hidden_size, visible_size))
-    w2 = theta[num_combinations:2*num_combinations].reshape((visible_size, hidden_size))
+    w1 = theta[0:num_combinations].reshape((visible_size, hidden_size))
+    w2 = theta[num_combinations:2*num_combinations].reshape((hidden_size, visible_size))
     b1 = theta[2*num_combinations:2*num_combinations+hidden_size]
     b2 = theta[2*num_combinations+hidden_size:]
-    
-    # Cost and gradient variables (your code needs to compute these values).
-    # Here, we initialize them to zeros.
-    cost = 0
-    w1grad = np.zeros_like(w1)
-    w2grad = np.zeros_like(w2)
-    b1grad = np.zeros_like(b1)
-    b2grad = np.zeros_like(b2)
 
     #  Instructions: Compute the cost/optimization objective J_sparse(W,b) for the Sparse Autoencoder,
     #                and the corresponding gradients W1grad, W2grad, b1grad, b2grad.
@@ -68,20 +60,51 @@ def sparse_autoencoder_cost_and_grad(theta, visible_size, hidden_size, decay_lam
     #
     # Stated differently, if we were using batch gradient descent to optimize the parameters,
     # the gradient descent update to W1 would be W1 := W1 - alpha * W1grad, and similarly for W2, b1, b2.
-    #
-    
-    
-    
-    
-    
-    
-    
-    
+
+    # autoencoder, y = x
+    y = data
+
+    # feedforward pass
+    a1 = data
+    z2 = np.dot(a1, w1)+b1
+    a2 = sigmoid(z2)
+    z3 = np.dot(a2, w2)+b2
+    a3 = sigmoid(z3)
+
+    # compute all deltas
+    # output layer
+    prime3 = np.multiply(a3, (1.0-a3))
+    delta3 = -np.multiply(y-a3, prime3)
+    # hidden layer
+    one_over_m = 1.0/np.float32(data.shape[0])
+    sparsity_avg = one_over_m*np.sum(a2, axis=0)
+    sparsity_term = -sparsity_param/sparsity_avg+(1.0-sparsity_param)/(1.0-sparsity_avg)
+    prime2 = np.multiply(a2, (1.0-a2))
+    delta2 = np.multiply(np.dot(delta3, np.transpose(w2)) + beta*sparsity_term, prime2)
+
+    # compute gradient
+    w1grad = np.zeros_like(w1)
+    for i in xrange(data.shape[0]):
+        w1grad += np.dot(a1[i, :].reshape((visible_size, 1)), delta2[i, :].reshape((1, hidden_size)))
+    w1grad = one_over_m*w1grad + decay_lambda*w1
+    w2grad = np.zeros_like(w2)
+    for i in xrange(data.shape[0]):
+        w2grad += np.dot(a2[i, :].reshape((hidden_size, 1)), delta3[i, :].reshape((1, visible_size)))
+    w2grad = one_over_m*w2grad + decay_lambda*w2
+    b1grad = one_over_m*np.sum(delta2, axis=0)
+    b2grad = one_over_m*np.sum(delta3, axis=0)
+
+    # compute cost
+    error_flatten = (a3-y).flatten()
+    w1_flatten = w1.flatten()
+    w2_flatten = w2.flatten()
+    cost = np.dot(error_flatten, error_flatten)*one_over_m/2.0 + \
+        decay_lambda*(np.dot(w1_flatten, w1_flatten)+np.dot(w2_flatten, w2_flatten))/2.0 + \
+        beta*(np.sum(sparsity_param*np.log(sparsity_param/sparsity_avg)+(1.0-sparsity_param)*np.log((1.0-sparsity_param)/(1.0-sparsity_avg))))
 
     # After computing the cost and gradient, we will convert the gradients back
     # to a vector format (suitable for minFunc).  Specifically, we will unroll
     # your gradient matrices into a vector.
-
     grad = np.concatenate((w1grad.flatten(), w2grad.flatten(), b1grad.flatten(), b2grad.flatten()))
 
     return cost, grad
