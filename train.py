@@ -99,8 +99,8 @@ def train():
                    jac=True, options={'maxiter': 400, 'disp': True})
 
     # STEP 5: Visualization
-    w1 = res.x[0: hidden_size*visible_size].reshape((hidden_size, visible_size))
-    display_network(w1, 5)
+    w1 = res.x[0: hidden_size*visible_size].reshape((visible_size, hidden_size))
+    display_network(np.transpose(w1), 5)
 
 
 if __name__ == "__main__":

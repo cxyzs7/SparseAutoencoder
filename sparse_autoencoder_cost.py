@@ -82,17 +82,17 @@ def sparse_autoencoder_cost_and_grad(theta, visible_size, hidden_size, decay_lam
     prime2 = np.multiply(a2, (1.0-a2))
     delta2 = np.multiply(np.dot(delta3, np.transpose(w2)) + beta*sparsity_term, prime2)
 
+    # compute partial gradient
+    w1grad_p = np.dot(np.transpose(a1), delta2)
+    w2grad_p = np.dot(np.transpose(a2), delta3)
+    b1grad_p = delta2
+    b2grad_p = delta3
+
     # compute gradient
-    w1grad = np.zeros_like(w1)
-    for i in xrange(data.shape[0]):
-        w1grad += np.dot(a1[i, :].reshape((visible_size, 1)), delta2[i, :].reshape((1, hidden_size)))
-    w1grad = one_over_m*w1grad + decay_lambda*w1
-    w2grad = np.zeros_like(w2)
-    for i in xrange(data.shape[0]):
-        w2grad += np.dot(a2[i, :].reshape((hidden_size, 1)), delta3[i, :].reshape((1, visible_size)))
-    w2grad = one_over_m*w2grad + decay_lambda*w2
-    b1grad = one_over_m*np.sum(delta2, axis=0)
-    b2grad = one_over_m*np.sum(delta3, axis=0)
+    w1grad = one_over_m*w1grad_p + decay_lambda*w1
+    w2grad = one_over_m*w2grad_p + decay_lambda*w2
+    b1grad = one_over_m*np.sum(b1grad_p, axis=0)
+    b2grad = one_over_m*np.sum(b2grad_p, axis=0)
 
     # compute cost
     error_flatten = (a3-y).flatten()
@@ -100,7 +100,8 @@ def sparse_autoencoder_cost_and_grad(theta, visible_size, hidden_size, decay_lam
     w2_flatten = w2.flatten()
     cost = np.dot(error_flatten, error_flatten)*one_over_m/2.0 + \
         decay_lambda*(np.dot(w1_flatten, w1_flatten)+np.dot(w2_flatten, w2_flatten))/2.0 + \
-        beta*(np.sum(sparsity_param*np.log(sparsity_param/sparsity_avg)+(1.0-sparsity_param)*np.log((1.0-sparsity_param)/(1.0-sparsity_avg))))
+        beta*(np.sum(sparsity_param*np.log(sparsity_param/sparsity_avg) +
+                     (1.0-sparsity_param)*np.log((1.0-sparsity_param)/(1.0-sparsity_avg))))
 
     # After computing the cost and gradient, we will convert the gradients back
     # to a vector format (suitable for minFunc).  Specifically, we will unroll
