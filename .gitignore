@@ -52,3 +52,10 @@ coverage.xml
 # Sphinx documentation
 docs/_build/
 
+# PyCharm
+.idea/
+
+# Data and temporary data
+IMAGES.mat
+iterate.dat
+data/
