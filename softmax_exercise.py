@@ -3,6 +3,11 @@
 from sklearn.datasets import fetch_mldata
 import numpy as np
 
+from softmax_cost import softmax_cost, softmax_cost_and_grad
+from compute_numerical_gradient import compute_numerical_gradient
+from softmax_train import softmax_train
+from softmax_predict import softmax_predict
+
 #  Instructions
 #  ------------
 # 
@@ -20,10 +25,10 @@ import numpy as np
 # to be used more generally on any arbitrary input. 
 # We also initialise some parameters used for tuning the model.
 
-inputSize = 28 * 28     # Size of input vector (MNIST images are 28x28)
-numClasses = 10         # Number of classes (MNIST images fall into 10 classes)
+input_size = 28 * 28     # Size of input vector (MNIST images are 28x28)
+num_classes = 10         # Number of classes (MNIST images fall into 10 classes)
 
-decayLambda = 1e-4      # Weight decay parameter
+decay_lambda = 1e-4      # Weight decay parameter
 
 #======================================================================
 # STEP 1: Load data
@@ -43,31 +48,29 @@ mnist = fetch_mldata('MNIST original', data_home='./data/')
 # scale the pixel values to the range [0,1]
 images = np.float32(mnist.data)/255.0
 labels = mnist.target
-# Remap 0 to 10
-labels[labels == 0] = 10
 
-inputData = images
+input_data = images
 
 # For debugging purposes, you may wish to reduce the size of the input data
 # in order to speed up gradient checking. 
 # Here, we create synthetic dataset using random data for testing
 
-DEBUG = True   # Set DEBUG to true when debugging.
+DEBUG = False   # Set DEBUG to true when debugging.
 if DEBUG:
-    inputSize = 8
-    inputData = np.random.randn(100, 8)
-    labels = np.random.randint(10, size=(100, 1))
+    input_size = 8
+    input_data = np.random.randn(100, 8)
+    labels = np.random.randint(10, size=(100, ))
 
 # Randomly initialise theta
-theta = 0.005 * np.random.randn(numClasses * inputSize, 1)
+theta = 0.005 * np.random.randn(input_size*num_classes, )
 
 #======================================================================
 # STEP 2: Implement softmaxCost
 #
 # Implement softmaxCost in softmaxCost.m.
 
-#[cost, grad] = softmaxCost(theta, numClasses, inputSize, lambda, inputData, labels)
-                                     
+cost, grad = softmax_cost_and_grad(theta, num_classes, input_size, decay_lambda, input_data, labels)
+
 #======================================================================
 # STEP 3: Gradient checking
 #
@@ -75,16 +78,16 @@ theta = 0.005 * np.random.randn(numClasses * inputSize, 1)
 # gradients are correct before learning the parameters.
 # 
 
-#if DEBUG:
-#    numGrad = computeNumericalGradient( @(x) softmaxCost(x, numClasses, ...
-#                                    inputSize, lambda, inputData, labels), theta)
+if DEBUG:
+    func = lambda x: softmax_cost(x, num_classes, input_size, decay_lambda, input_data, labels)
+    numgrad = compute_numerical_gradient(func, theta)
 
     # Use this to visually compare the gradients side by side
-#    disp([numGrad grad])
+    print numgrad, grad
 
     # Compare numerically computed gradients with those computed analytically
-#    diff = norm(numGrad-grad)/norm(numGrad+grad)
-#    disp(diff)
+    diff = np.linalg.norm(numgrad-grad)/np.linalg.norm(numgrad+grad)
+    print diff
     # The difference should be small. 
     # In our implementation, these values are usually less than 1e-7.
 
@@ -97,9 +100,8 @@ theta = 0.005 * np.random.randn(numClasses * inputSize, 1)
 # you can start training your softmax regression code using softmaxTrain
 # (which uses minFunc).
 
-#options.maxIter = 100
-#softmaxModel = softmaxTrain(inputSize, numClasses, lambda, ...
-#                            inputData, labels, options)
+options = {'maxiter': 100}
+softmax_model = softmax_train(input_size, num_classes, decay_lambda, input_data, labels, options)
                           
 # Although we only use 100 iterations here to train a classifier for the 
 # MNIST data set, in practice, training for more iterations is usually
@@ -113,17 +115,11 @@ theta = 0.005 * np.random.randn(numClasses * inputSize, 1)
 # (in softmaxPredict.m), which should return predictions
 # given a softmax model and the input data.
 
-#images = loadMNISTImages('mnist/t10k-images-idx3-ubyte')
-#labels = loadMNISTLabels('mnist/t10k-labels-idx1-ubyte')
-#labels(labels==0) = 10; # Remap 0 to 10
-
-#inputData = images
-
 # You will have to implement softmaxPredict in softmaxPredict.m
-#[pred] = softmaxPredict(softmaxModel, inputData)
+pred = softmax_predict(softmax_model, input_data)
 
-#acc = mean(labels(:) == pred(:))
-#fprintf('Accuracy: #0.3f##\n', acc * 100)
+acc = np.mean(labels == pred)
+print ('Accuracy: #0.3f##\n', acc * 100)
 
 # Accuracy is the proportion of correctly classified images
 # After 100 iterations, the results for our implementation were:

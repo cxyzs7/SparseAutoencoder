@@ -1,4 +1,3 @@
-from random import randint
 from math import sqrt
 
 import numpy as np
@@ -83,8 +82,8 @@ def sparse_autoencoder_cost_and_grad(theta, visible_size, hidden_size, decay_lam
     delta2 = np.multiply(np.dot(delta3, np.transpose(w2)) + beta*sparsity_term, prime2)
 
     # compute partial gradient
-    w1grad_p = np.dot(np.transpose(a1), delta2)
-    w2grad_p = np.dot(np.transpose(a2), delta3)
+    w1grad_p = np.dot(a1.T, delta2)
+    w2grad_p = np.dot(a2.T, delta3)
     b1grad_p = delta2
     b2grad_p = delta3
 
