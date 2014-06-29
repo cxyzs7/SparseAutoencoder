@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import matplotlib.cm as cm
 
 
-def display_network(data, cols=-1, opt_normalize=True, opt_graycolor=True):
+def display_network(data, cols=-1, opt_normalize=True, opt_graycolor=True, save_figure_path=None):
     # This function visualizes filters in matrix A. Each row of A is a
     # filter. We will reshape each row into a square image and visualizes
     # on each cell of the visualization panel.
@@ -67,5 +67,8 @@ def display_network(data, cols=-1, opt_normalize=True, opt_graycolor=True):
         ax.imshow(array, interpolation='nearest', extent=exts)
 
     plt.axis('off')
+
+    if save_figure_path:
+        plt.savefig(save_figure_path)
 
     plt.show()
