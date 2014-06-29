@@ -44,7 +44,7 @@ decay_lambda = 1e-4      # Weight decay parameter
 # On some platforms, the files might be saved as 
 # train-images.idx3-ubyte / train-labels.idx1-ubyte
 
-mnist = fetch_mldata('MNIST original', data_home='./data/')
+mnist = fetch_mldata('MNIST original', data_home='../data/')
 
 # scale the pixel values to the range [0,1]
 images = np.float32(mnist.data)/255.0
