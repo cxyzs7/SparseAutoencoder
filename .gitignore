@@ -56,6 +56,5 @@ docs/_build/
 .idea/
 
 # Data and temporary data
-IMAGES.mat
 iterate.dat
 data/

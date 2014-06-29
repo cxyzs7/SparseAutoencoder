@@ -4,9 +4,10 @@ from sklearn.datasets import fetch_mldata
 import numpy as np
 
 from softmax_cost import softmax_cost, softmax_cost_and_grad
-from compute_numerical_gradient import compute_numerical_gradient
 from softmax_train import softmax_train
 from softmax_predict import softmax_predict
+
+from sparse_autoencoder.compute_numerical_gradient import compute_numerical_gradient
 
 #  Instructions
 #  ------------

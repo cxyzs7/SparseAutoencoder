@@ -30,7 +30,7 @@ def sample_images(patch_size, num_patches):
     :return: 10000 patches for training
     """
     ## Get IMAGES.mat from http://ufldl.stanford.edu/wiki/resources/sparseae_exercise.zip
-    images = loadmat('IMAGES.mat')['IMAGES']    # load images from disk
+    images = loadmat('../data/IMAGES.mat')['IMAGES']    # load images from disk
     num_images = images.shape[2]
 
     # Initialize patches

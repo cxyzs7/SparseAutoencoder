@@ -1,6 +1,10 @@
-SparseAutoencoder
+UFLDL_Tutorial
 =================
 
-Python Sparse Autoencoder
+UFLDL Tutorial
 
-A python implementation of http://ufldl.stanford.edu/wiki/index.php/Exercise:Sparse_Autoencoder
+A python implementation of the exercises on http://ufldl.stanford.edu/wiki/index.php/UFLDL_Tutorial
+Including
+Sparse Autoencoder
+Softmax Regression
+Self-Taught Learning
