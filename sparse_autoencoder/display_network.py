@@ -47,7 +47,7 @@ def display_network(data, cols=-1, opt_normalize=True, opt_graycolor=True, save_
     k = 0
     for i in xrange(m):
         for j in xrange(n):
-            if k > num:
+            if k >= num:
                 continue
             if opt_normalize:
                 clim = np.amax(np.absolute(data[k, :]))

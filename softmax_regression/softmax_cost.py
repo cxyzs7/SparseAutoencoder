@@ -38,12 +38,11 @@ def softmax_cost_and_grad(theta, num_classes, input_size, decay_lambda, data, la
         decay_lambda/2.0*np.dot(theta.flatten(), theta.flatten())
 
     # compute gradient
-    thetagrad = -np.dot(data.T, ground_truth-hypothesis)/num_cases + \
-        decay_lambda*theta
+    thetagrad = -np.dot(data.T, ground_truth-hypothesis)/num_cases + decay_lambda*theta
 
     # ------------------------------------------------------------------
     # Unroll the gradient matrices into a vector for minFunc
-    grad = thetagrad.flatten()
+    grad = thetagrad.ravel()
 
     return cost, grad
 

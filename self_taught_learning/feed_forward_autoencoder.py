@@ -12,14 +12,14 @@ def feed_forward_autoencoder(theta, hidden_size, visible_size, data):
     # We first convert theta to the (W1, W2, b1, b2) matrix/vector format, so that this
     # follows the notation convention of the lecture notes.
 
-    W1 = reshape(theta(1:hiddenSize*visibleSize), hiddenSize, visibleSize);
-    b1 = theta(2*hiddenSize*visibleSize+1:2*hiddenSize*visibleSize+hiddenSize);
+    num_combinations = visible_size*hidden_size
+    w1 = theta[0:num_combinations].reshape((visible_size, hidden_size))
+    b1 = theta[2*num_combinations:2*num_combinations+hidden_size]
 
     #  Instructions: Compute the activation of the hidden layer for the Sparse Autoencoder.
-
+    activation = sigmoid(np.dot(data, w1)+b1)
 
     #-------------------------------------------------------------------
-
     return activation
 
 

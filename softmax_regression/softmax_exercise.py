@@ -120,7 +120,7 @@ softmax_model = softmax_train(input_size, num_classes, decay_lambda, input_data,
 pred = softmax_predict(softmax_model, input_data)
 
 acc = np.mean(labels == pred)
-print ('Accuracy: #0.3f##\n', acc * 100)
+print 'Accuracy: {0:.3f}\n'.format(acc * 100)
 
 # Accuracy is the proportion of correctly classified images
 # After 100 iterations, the results for our implementation were:

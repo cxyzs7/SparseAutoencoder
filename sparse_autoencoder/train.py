@@ -100,7 +100,7 @@ def train():
 
     # STEP 5: Visualization
     w1 = res.x[0: hidden_size*visible_size].reshape((visible_size, hidden_size))
-    display_network(np.transpose(w1), 5, save_figure_path='../data/sparse_autoencoder.png')
+    display_network(w1.T, 5, save_figure_path='../data/sparse_autoencoder.png')
 
 
 if __name__ == "__main__":

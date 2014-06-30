@@ -1,4 +1,5 @@
 from math import sqrt
+import gc
 
 import numpy as np
 
@@ -65,47 +66,38 @@ def sparse_autoencoder_cost_and_grad(theta, visible_size, hidden_size, decay_lam
 
     # feedforward pass
     a1 = data
-    z2 = np.dot(a1, w1)+b1
-    a2 = sigmoid(z2)
-    z3 = np.dot(a2, w2)+b2
-    a3 = sigmoid(z3)
+    a2 = sigmoid(np.dot(a1, w1)+b1)
+    a3 = sigmoid(np.dot(a2, w2)+b2)
 
     # compute all deltas
     # output layer
-    prime3 = np.multiply(a3, (1.0-a3))
-    delta3 = -np.multiply(y-a3, prime3)
+    delta3 = (a3-y)*a3*(1.0-a3)
     # hidden layer
     one_over_m = 1.0/np.float32(data.shape[0])
     sparsity_avg = one_over_m*np.sum(a2, axis=0)
     sparsity_term = -sparsity_param/sparsity_avg+(1.0-sparsity_param)/(1.0-sparsity_avg)
-    prime2 = np.multiply(a2, (1.0-a2))
-    delta2 = np.multiply(np.dot(delta3, np.transpose(w2)) + beta*sparsity_term, prime2)
-
-    # compute partial gradient
-    w1grad_p = np.dot(a1.T, delta2)
-    w2grad_p = np.dot(a2.T, delta3)
-    b1grad_p = delta2
-    b2grad_p = delta3
+    delta2 = (np.dot(delta3, w2.T) + beta*sparsity_term)*a2*(1.0-a2)
+    del sparsity_term
+    gc.collect()
 
     # compute gradient
-    w1grad = one_over_m*w1grad_p + decay_lambda*w1
-    w2grad = one_over_m*w2grad_p + decay_lambda*w2
-    b1grad = one_over_m*np.sum(b1grad_p, axis=0)
-    b2grad = one_over_m*np.sum(b2grad_p, axis=0)
+    w1grad = one_over_m*np.dot(a1.T, delta2) + decay_lambda*w1
+    w2grad = one_over_m*np.dot(a2.T, delta3) + decay_lambda*w2
+    b1grad = one_over_m*np.sum(delta2, axis=0)
+    b2grad = one_over_m*np.sum(delta3, axis=0)
 
     # compute cost
-    error_flatten = (a3-y).flatten()
-    w1_flatten = w1.flatten()
-    w2_flatten = w2.flatten()
-    cost = np.dot(error_flatten, error_flatten)*one_over_m/2.0 + \
-        decay_lambda*(np.dot(w1_flatten, w1_flatten)+np.dot(w2_flatten, w2_flatten))/2.0 + \
+    w1_ravel = w1.ravel()
+    w2_ravel = w2.ravel()
+    cost = np.dot((a3-y).ravel(), (a3-y).ravel())*one_over_m/2.0 + \
+        decay_lambda*(np.dot(w1_ravel, w1_ravel)+np.dot(w2_ravel, w2_ravel))/2.0 + \
         beta*(np.sum(sparsity_param*np.log(sparsity_param/sparsity_avg) +
                      (1.0-sparsity_param)*np.log((1.0-sparsity_param)/(1.0-sparsity_avg))))
 
     # After computing the cost and gradient, we will convert the gradients back
     # to a vector format (suitable for minFunc).  Specifically, we will unroll
     # your gradient matrices into a vector.
-    grad = np.concatenate((w1grad.flatten(), w2grad.flatten(), b1grad.flatten(), b2grad.flatten()))
+    grad = np.concatenate((w1grad.ravel(), w2grad.ravel(), b1grad.ravel(), b2grad.ravel()))
 
     return cost, grad
 
