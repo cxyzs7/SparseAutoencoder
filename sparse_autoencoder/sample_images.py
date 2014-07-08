@@ -2,7 +2,7 @@ from random import randint
 
 from scipy.io import loadmat
 import numpy as np
-#from matplotlib import pyplot as plt
+# from matplotlib import pyplot as plt
 
 
 def normalize_data(patches):
@@ -30,23 +30,23 @@ def sample_images(patch_size, num_patches):
     :return: 10000 patches for training
     """
     ## Get IMAGES.mat from http://ufldl.stanford.edu/wiki/resources/sparseae_exercise.zip
-    images = loadmat('../data/IMAGES.mat')['IMAGES']    # load images from disk
+    images = loadmat('../data/IMAGES.mat')['IMAGES']  # load images from disk
     num_images = images.shape[2]
 
     # Initialize patches
-    patches = np.empty([num_patches, patch_size*patch_size])
+    patches = np.empty([num_patches, patch_size * patch_size])
 
     for i in xrange(num_patches):
         # randomly pick an image
-        image_idx = randint(0, num_images-1)
+        image_idx = randint(0, num_images - 1)
         height, width = images[:, :, image_idx].shape
 
         # randomly pick a patch
-        y = randint(0, height-patch_size)
-        x = randint(0, width-patch_size)
+        y = randint(0, height - patch_size)
+        x = randint(0, width - patch_size)
 
         # copy data
-        np.copyto(dst=patches[i, :], src=images[y:y+patch_size, x:x+patch_size, image_idx].reshape((1, 64)))
+        np.copyto(dst=patches[i, :], src=images[y:y + patch_size, x:x + patch_size, image_idx].reshape((1, 64)))
 
     # For the autoencoder to work well we need to normalize the data
     # Specifically, since the output of the network is bounded between [0,1]

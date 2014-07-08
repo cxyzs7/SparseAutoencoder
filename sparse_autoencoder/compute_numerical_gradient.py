@@ -16,20 +16,20 @@ def compute_numerical_gradient(func, theta):
     # partial derivative of func with respect to the i-th input argument, evaluated at theta.
     # I.e., numgrad(i) should be the (approximately) the partial derivative of func with
     # respect to theta(i).
-    #                
+    #
     # Hint: You will probably want to compute the elements of numgrad one at a time.
     epsilon = 1e-4
     for i in xrange(theta.size):
         # temporarily save the value
         theta_i = theta[i]
         # temporarily increase the value
-        theta[i] = theta_i+epsilon
+        theta[i] = theta_i + epsilon
         val_plus = func(theta)
         # temporarily decrease the value
-        theta[i] = theta_i-epsilon
+        theta[i] = theta_i - epsilon
         val_minus = func(theta)
         # compute numerical gradient
-        numgrad[i] = (val_plus-val_minus)/(epsilon*2)
+        numgrad[i] = (val_plus - val_minus) / (epsilon * 2)
         # restore theta
         theta[i] = theta_i
 

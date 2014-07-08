@@ -6,18 +6,18 @@ def softmax_cost_and_grad(theta, num_classes, input_size, decay_lambda, data, la
     # input_size - the size N of the input vector
     # decay_lambda - weight decay parameter
     # data - the N x M input matrix, where each row data(i, :) corresponds to
-    #        a single test set
+    # a single test set
     # labels - an 1 x N matrix containing the labels corresponding for the input data
     #
-    
+
     # Unroll the parameters from theta
     theta = theta.reshape((input_size, num_classes))
-    
+
     num_cases = data.shape[0]
 
     ground_truth = np.zeros((num_cases, num_classes))
     ground_truth[xrange(num_cases), labels.tolist()] = 1
-    
+
     thetagrad = np.empty_like(theta)
 
     # Instructions: Compute the cost and gradient for softmax regression.
@@ -31,14 +31,14 @@ def softmax_cost_and_grad(theta, num_classes, input_size, decay_lambda, data, la
     exp_theta_x = np.exp(theta_x)
 
     # compute h(x)
-    hypothesis = exp_theta_x/np.sum(exp_theta_x, axis=1, keepdims=True)
+    hypothesis = exp_theta_x / np.sum(exp_theta_x, axis=1, keepdims=True)
 
     # compute cost
-    cost = -np.sum(ground_truth*np.log(hypothesis))/num_cases + \
-        decay_lambda/2.0*np.dot(theta.flatten(), theta.flatten())
+    cost = -np.sum(ground_truth * np.log(hypothesis)) / num_cases + \
+           decay_lambda / 2.0 * np.dot(theta.flatten(), theta.flatten())
 
     # compute gradient
-    thetagrad = -np.dot(data.T, ground_truth-hypothesis)/num_cases + decay_lambda*theta
+    thetagrad = -np.dot(data.T, ground_truth - hypothesis) / num_cases + decay_lambda * theta
 
     # ------------------------------------------------------------------
     # Unroll the gradient matrices into a vector for minFunc

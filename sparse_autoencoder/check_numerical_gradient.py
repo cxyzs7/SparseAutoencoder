@@ -6,18 +6,18 @@ from compute_numerical_gradient import compute_numerical_gradient
 def simple_quadratic_function(x):
     # this function accepts a 2D vector as input.
     # Its outputs are:
-    #   value: h(x1, x2) = x1^2 + 3*x1*x2
+    # value: h(x1, x2) = x1^2 + 3*x1*x2
     #   grad: A 2x1 vector that gives the partial derivatives of h with respect to x1 and x2
     # Note that when we pass simple_quadratic_function(x) to check_numerical_gradient, we're assuming
     # that compute_numerical_gradient will use only the first returned value of this function.
-    value = x[0]**2 + 3*x[0]*x[1]
+    value = x[0] ** 2 + 3 * x[0] * x[1]
     return value
 
 
 def simple_quadratic_function_grad(x):
     grad = np.empty_like(x)
-    grad[0] = 2*x[0] + 3*x[1]
-    grad[1] = 3*x[0]
+    grad[0] = 2 * x[0] + 3 * x[1]
+    grad[1] = 3 * x[0]
     return grad
 
 
@@ -46,6 +46,6 @@ def check_numerical_gradient():
     # Evaluate the norm of the difference between two solutions.
     # If you have a correct implementation, and assuming you used EPSILON = 0.0001
     # in computeNumericalGradient.m, then diff below should be 2.1452e-12
-    diff = np.linalg.norm(numgrad-grad)/np.linalg.norm(numgrad+grad)
+    diff = np.linalg.norm(numgrad - grad) / np.linalg.norm(numgrad + grad)
     print diff
     print 'Norm of the difference between numerical and analytical gradient (should be < 1e-9)\n\n'

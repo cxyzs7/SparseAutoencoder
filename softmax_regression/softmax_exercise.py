@@ -6,10 +6,10 @@ import numpy as np
 from softmax_cost import softmax_cost, softmax_cost_and_grad
 from softmax_train import softmax_train
 from softmax_predict import softmax_predict
-
 from sparse_autoencoder.compute_numerical_gradient import compute_numerical_gradient
 
-#  Instructions
+
+# Instructions
 #  ------------
 # 
 #  This file contains code that helps you get started on the
@@ -26,10 +26,10 @@ from sparse_autoencoder.compute_numerical_gradient import compute_numerical_grad
 # to be used more generally on any arbitrary input. 
 # We also initialise some parameters used for tuning the model.
 
-input_size = 28 * 28     # Size of input vector (MNIST images are 28x28)
-num_classes = 10         # Number of classes (MNIST images fall into 10 classes)
+input_size = 28 * 28  # Size of input vector (MNIST images are 28x28)
+num_classes = 10  # Number of classes (MNIST images fall into 10 classes)
 
-decay_lambda = 1e-4      # Weight decay parameter
+decay_lambda = 1e-4  # Weight decay parameter
 
 #======================================================================
 # STEP 1: Load data
@@ -47,7 +47,7 @@ decay_lambda = 1e-4      # Weight decay parameter
 mnist = fetch_mldata('MNIST original', data_home='../data/')
 
 # scale the pixel values to the range [0,1]
-images = np.float32(mnist.data)/255.0
+images = np.float32(mnist.data) / 255.0
 labels = mnist.target
 
 input_data = images
@@ -56,14 +56,14 @@ input_data = images
 # in order to speed up gradient checking. 
 # Here, we create synthetic dataset using random data for testing
 
-DEBUG = False   # Set DEBUG to true when debugging.
+DEBUG = False  # Set DEBUG to true when debugging.
 if DEBUG:
     input_size = 8
     input_data = np.random.randn(100, 8)
     labels = np.random.randint(10, size=(100, ))
 
 # Randomly initialise theta
-theta = 0.005 * np.random.randn(input_size*num_classes, )
+theta = 0.005 * np.random.randn(input_size * num_classes, )
 
 #======================================================================
 # STEP 2: Implement softmaxCost
@@ -87,7 +87,7 @@ if DEBUG:
     print numgrad, grad
 
     # Compare numerically computed gradients with those computed analytically
-    diff = np.linalg.norm(numgrad-grad)/np.linalg.norm(numgrad+grad)
+    diff = np.linalg.norm(numgrad - grad) / np.linalg.norm(numgrad + grad)
     print diff
     # The difference should be small. 
     # In our implementation, these values are usually less than 1e-7.
@@ -103,7 +103,7 @@ if DEBUG:
 
 options = {'maxiter': 100}
 softmax_model = softmax_train(input_size, num_classes, decay_lambda, input_data, labels, options)
-                          
+
 # Although we only use 100 iterations here to train a classifier for the 
 # MNIST data set, in practice, training for more iterations is usually
 # beneficial.

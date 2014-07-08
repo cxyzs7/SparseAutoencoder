@@ -13,7 +13,7 @@ def softmax_train(input_size, num_classes, decay_lambda, input_data, labels, opt
     # numClasses: the number of classes
     # lambda: weight decay parameter
     # inputData: an N by M matrix containing the input data, such that
-    #            inputData(:, c) is the cth input
+    # inputData(:, c) is the cth input
     # labels: M by 1 matrix containing the class labels for the
     #            corresponding inputs. labels(c) is the class label for
     #            the cth input
@@ -24,7 +24,7 @@ def softmax_train(input_size, num_classes, decay_lambda, input_data, labels, opt
         options['maxiter'] = 400
 
     # initialize parameters
-    theta = 0.005 * np.random.randn(input_size*num_classes, )
+    theta = 0.005 * np.random.randn(input_size * num_classes, )
 
     # Use minFunc to minimize the function
     options['disp'] = True

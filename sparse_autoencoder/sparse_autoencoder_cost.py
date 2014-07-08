@@ -1,12 +1,12 @@
+import numpy as np
+
 from math import sqrt
 import gc
-
-import numpy as np
 
 
 def initialize_parameters(visible_size, hidden_size):
     # Initialize parameters randomly based on layer sizes.
-    r = sqrt(6) / sqrt(hidden_size+visible_size+1)   # we'll choose weights uniformly from the interval [-r, r]
+    r = sqrt(6) / sqrt(hidden_size + visible_size + 1)  # we'll choose weights uniformly from the interval [-r, r]
     w1 = np.random.rand(visible_size, hidden_size) * 2 * r - r
     w2 = np.random.rand(hidden_size, visible_size) * 2 * r - r
 
@@ -33,19 +33,19 @@ def sparse_autoencoder_cost_and_grad(theta, visible_size, hidden_size, decay_lam
     # hidden_size: the number of hidden units (probably 25)
     # decay_lambda: weight decay parameter
     # sparsity_param: The desired average activation for the hidden units (denoted in the lecture
-    #                           notes by the greek alphabet rho, which looks like a lower-case "p").
+    # notes by the greek alphabet rho, which looks like a lower-case "p").
     # beta: weight of sparsity penalty term
     # data: Our 10000x64 matrix containing the training data.  So, data(i,:) is the i-th training example.
-    
+
     # The input theta is a vector (because minFunc expects the parameters to be a vector).
     # We first convert theta to the (W1, W2, b1, b2) matrix/vector format, so that this
     # follows the notation convention of the lecture notes.
 
-    num_combinations = visible_size*hidden_size
+    num_combinations = visible_size * hidden_size
     w1 = theta[0:num_combinations].reshape((visible_size, hidden_size))
-    w2 = theta[num_combinations:2*num_combinations].reshape((hidden_size, visible_size))
-    b1 = theta[2*num_combinations:2*num_combinations+hidden_size]
-    b2 = theta[2*num_combinations+hidden_size:]
+    w2 = theta[num_combinations:2 * num_combinations].reshape((hidden_size, visible_size))
+    b1 = theta[2 * num_combinations:2 * num_combinations + hidden_size]
+    b2 = theta[2 * num_combinations + hidden_size:]
 
     #  Instructions: Compute the cost/optimization objective J_sparse(W,b) for the Sparse Autoencoder,
     #                and the corresponding gradients W1grad, W2grad, b1grad, b2grad.
@@ -66,33 +66,33 @@ def sparse_autoencoder_cost_and_grad(theta, visible_size, hidden_size, decay_lam
 
     # feedforward pass
     a1 = data
-    a2 = sigmoid(np.dot(a1, w1)+b1)
-    a3 = sigmoid(np.dot(a2, w2)+b2)
+    a2 = sigmoid(np.dot(a1, w1) + b1)
+    a3 = sigmoid(np.dot(a2, w2) + b2)
 
     # compute all deltas
     # output layer
-    delta3 = (a3-y)*a3*(1.0-a3)
+    delta3 = (a3 - y) * a3 * (1.0 - a3)
     # hidden layer
-    one_over_m = 1.0/np.float32(data.shape[0])
-    sparsity_avg = one_over_m*np.sum(a2, axis=0)
-    sparsity_term = -sparsity_param/sparsity_avg+(1.0-sparsity_param)/(1.0-sparsity_avg)
-    delta2 = (np.dot(delta3, w2.T) + beta*sparsity_term)*a2*(1.0-a2)
+    one_over_m = 1.0 / np.float32(data.shape[0])
+    sparsity_avg = one_over_m * np.sum(a2, axis=0)
+    sparsity_term = -sparsity_param / sparsity_avg + (1.0 - sparsity_param) / (1.0 - sparsity_avg)
+    delta2 = (np.dot(delta3, w2.T) + beta * sparsity_term) * a2 * (1.0 - a2)
     del sparsity_term
     gc.collect()
 
     # compute gradient
-    w1grad = one_over_m*np.dot(a1.T, delta2) + decay_lambda*w1
-    w2grad = one_over_m*np.dot(a2.T, delta3) + decay_lambda*w2
-    b1grad = one_over_m*np.sum(delta2, axis=0)
-    b2grad = one_over_m*np.sum(delta3, axis=0)
+    w1grad = one_over_m * np.dot(a1.T, delta2) + decay_lambda * w1
+    w2grad = one_over_m * np.dot(a2.T, delta3) + decay_lambda * w2
+    b1grad = one_over_m * np.sum(delta2, axis=0)
+    b2grad = one_over_m * np.sum(delta3, axis=0)
 
     # compute cost
     w1_ravel = w1.ravel()
     w2_ravel = w2.ravel()
-    cost = np.dot((a3-y).ravel(), (a3-y).ravel())*one_over_m/2.0 + \
-        decay_lambda*(np.dot(w1_ravel, w1_ravel)+np.dot(w2_ravel, w2_ravel))/2.0 + \
-        beta*(np.sum(sparsity_param*np.log(sparsity_param/sparsity_avg) +
-                     (1.0-sparsity_param)*np.log((1.0-sparsity_param)/(1.0-sparsity_avg))))
+    cost = np.dot((a3 - y).ravel(), (a3 - y).ravel()) * one_over_m / 2.0 + \
+           decay_lambda * (np.dot(w1_ravel, w1_ravel) + np.dot(w2_ravel, w2_ravel)) / 2.0 + \
+           beta * (np.sum(sparsity_param * np.log(sparsity_param / sparsity_avg) +
+                          (1.0 - sparsity_param) * np.log((1.0 - sparsity_param) / (1.0 - sparsity_avg))))
 
     # After computing the cost and gradient, we will convert the gradients back
     # to a vector format (suitable for minFunc).  Specifically, we will unroll

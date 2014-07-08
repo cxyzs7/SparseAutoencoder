@@ -1,11 +1,8 @@
-import numpy as np
 from scipy.optimize import minimize
 
 from sample_images import sample_images
 from display_network import display_network
-from sparse_autoencoder_cost import initialize_parameters, sparse_autoencoder_cost, sparse_autoencoder_cost_and_grad
-from check_numerical_gradient import check_numerical_gradient
-from compute_numerical_gradient import compute_numerical_gradient
+from sparse_autoencoder_cost import initialize_parameters, sparse_autoencoder_cost_and_grad
 
 
 def train():
@@ -15,24 +12,24 @@ def train():
 
     patch_size = 8
     num_patches = 10000
-    visible_size = patch_size**2    # number of input units
-    hidden_size = 25                # number of hidden units
-    sparsity_param = 0.01   # desired average activation of the hidden units.
-                        # (This was denoted by the Greek alphabet rho, which looks like a lower-case "p",
-                        #  in the lecture notes).
-    decay_lambda = 0.0001     # weight decay parameter
-    beta = 3            # weight of sparsity penalty term
+    visible_size = patch_size ** 2  # number of input units
+    hidden_size = 25  # number of hidden units
+    sparsity_param = 0.01  # desired average activation of the hidden units.
+    # (This was denoted by the Greek alphabet rho, which looks like a lower-case "p",
+    # in the lecture notes).
+    decay_lambda = 0.0001  # weight decay parameter
+    beta = 3  # weight of sparsity penalty term
 
     # STEP 1: Implement sampleIMAGES
     # After implementing sampleIMAGES, the display_network command should
     # display a random sample of 200 patches from the dataset
 
     patches = sample_images(patch_size, num_patches)
-#    list = [randint(0, patches.shape[0]-1) for i in xrange(64)]
-#    display_network(patches[list, :], 8)
+    #    list = [randint(0, patches.shape[0]-1) for i in xrange(64)]
+    #    display_network(patches[list, :], 8)
 
     # Obtain random parameters theta
-#    theta = initialize_parameters(visible_size, hidden_size)
+    #    theta = initialize_parameters(visible_size, hidden_size)
 
     # STEP 2: Implement sparseAutoencoderCost
     #
@@ -59,8 +56,8 @@ def train():
     #  and/or lambda to zero may be helpful for debugging.)  However, in your
     #  final submission of the visualized weights, please use parameters we
     #  gave in Step 0 above.
-#    cost, grad = sparse_autoencoder_cost_and_grad(theta, visible_size, hidden_size,
-#                                                  decay_lambda, sparsity_param, beta, patches)
+    #    cost, grad = sparse_autoencoder_cost_and_grad(theta, visible_size, hidden_size,
+    #                                                  decay_lambda, sparsity_param, beta, patches)
 
     # STEP 3: Gradient Checking
     #
@@ -71,21 +68,21 @@ def train():
     # First, lets make sure your numerical gradient computation is correct for a
     # simple function.  After you have implemented compute_numerical_gradient,
     # run the following:
-#    check_numerical_gradient()
+    #    check_numerical_gradient()
 
     # Now we can use it to check your cost function and derivative calculations
     # for the sparse autoencoder.
-#    func = lambda x: sparse_autoencoder_cost(x, visible_size, hidden_size,
-#                                             decay_lambda, sparsity_param, beta, patches)
-#    numgrad = compute_numerical_gradient(func, theta)
+    #    func = lambda x: sparse_autoencoder_cost(x, visible_size, hidden_size,
+    #                                             decay_lambda, sparsity_param, beta, patches)
+    #    numgrad = compute_numerical_gradient(func, theta)
 
     # Use this to visually compare the gradients side by side
-#    print numgrad, grad
+    #    print numgrad, grad
 
     # Compare numerically computed gradients with the ones obtained from backpropagation
-#    diff = np.linalg.norm(numgrad-grad)/np.linalg.norm(numgrad+grad)
+    #    diff = np.linalg.norm(numgrad-grad)/np.linalg.norm(numgrad+grad)
     # Should be small. In our implementation, these values are usually less than 1e-9.
-#    print diff
+    #    print diff
 
     # STEP 4: After verifying that your implementation of
     # sparse_autoencoder_cost is correct, You can start training your sparse
@@ -99,7 +96,7 @@ def train():
                    jac=True, options={'maxiter': 400, 'disp': True})
 
     # STEP 5: Visualization
-    w1 = res.x[0: hidden_size*visible_size].reshape((visible_size, hidden_size))
+    w1 = res.x[0: hidden_size * visible_size].reshape((visible_size, hidden_size))
     display_network(w1.T, 5, save_figure_path='../data/sparse_autoencoder.png')
 
 
